@@ -50,13 +50,37 @@ namespace Api.Controllers
             return Ok(results);
         }
 
+        private async Task<bool> FileNameIsAlreadyInUse(string fileName)
+        {
+            var existing = await GetExistingImages().ConfigureAwait(false);
+            return existing.Contains(fileName);
+        }
+
+        private async Task<List<string>> GetExistingImages()
+        {
+            BlobContainerClient containerClient = await GetCloudBlobContainer(_options.FullImageContainerName);
+            List<string> results = new List<string>();
+            await foreach (BlobItem blobItem in containerClient.GetBlobsAsync())
+            {
+                results.Add(blobItem.Name);
+            }
+            Console.Out.WriteLine("Got Images");
+            return results;
+        }
+
         [Route("/")]
         [HttpPost]
         public async Task<ActionResult> Post()
         {
             Stream image = Request.Body;
+            var preferredFileName = Request.Headers["PreferredFileName"];
+
             BlobContainerClient containerClient = await GetCloudBlobContainer(_options.FullImageContainerName);
-            string blobName = Guid.NewGuid().ToString().ToLower().Replace("-", String.Empty);
+            string blobName = 
+                await FileNameIsAlreadyInUse(preferredFileName).ConfigureAwait(false)
+                ? Guid.NewGuid().ToString().ToLower().Replace("-", String.Empty)
+                : preferredFileName;
+
             BlobClient blobClient = containerClient.GetBlobClient(blobName);
             await blobClient.UploadAsync(image);
             return Created(blobClient.Uri, null);

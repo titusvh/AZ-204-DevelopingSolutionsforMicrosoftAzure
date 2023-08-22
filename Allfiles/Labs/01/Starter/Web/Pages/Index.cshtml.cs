@@ -43,10 +43,12 @@ namespace Web.Pages
             if (Upload != null && Upload.Length > 0)
             {
                 var imagesUrl = _options.ApiUrl;
+                var preferredImageName = System.IO.Path.GetFileName(Upload.FileName.ToLower());
 
                 using (var image = new StreamContent(Upload.OpenReadStream()))
                 {
                     image.Headers.ContentType = new MediaTypeHeaderValue(Upload.ContentType);
+                    image.Headers.Add("PreferredFileName", preferredImageName);
                     var response = await _httpClient.PostAsync(imagesUrl, image);
                 }
             }
