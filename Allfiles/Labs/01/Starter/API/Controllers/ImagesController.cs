@@ -78,6 +78,16 @@ namespace Api.Controllers
         [HttpPost]
         public async Task<ActionResult> Post()
         {
+            if (Request.Body == null)
+            {
+                _logger.LogError("Body is null");
+                return BadRequest("Body with upload file is NULL");
+            }
+            if (Request.ContentLength == 0)
+            {
+                _logger.LogError("Body is empty");
+                return BadRequest("Body with upload file is EMPTY");
+            }
             Stream image = Request.Body;
             var preferredFileName = Request.Headers["PreferredFileName"];
 
