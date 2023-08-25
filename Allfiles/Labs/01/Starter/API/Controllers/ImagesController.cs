@@ -2,6 +2,7 @@
 using Azure.Storage.Blobs.Models;
 using Flurl;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,15 +17,19 @@ namespace Api.Controllers
     {
         private HttpClient _httpClient;
         private Options _options;
+        private readonly ILogger _logger;
 
-        public ImagesController(HttpClient httpClient, Options options)
+        public ImagesController(HttpClient httpClient, Options options, ILoggerFactory logfac)
         {
             _httpClient = httpClient;
             _options = options;
+            _logger = logfac.CreateLogger<ImagesController>();
+            _logger.LogInformation("Hallo hallo, we zijn er weer!");
         }
 
         private async Task<BlobContainerClient> GetCloudBlobContainer(string containerName)
         {
+            
             BlobServiceClient serviceClient = new BlobServiceClient(_options.StorageConnectionString);
             BlobContainerClient containerClient = serviceClient.GetBlobContainerClient(containerName);
             await containerClient.CreateIfNotExistsAsync();
@@ -47,6 +52,7 @@ namespace Api.Controllers
                 );
             }
             Console.Out.WriteLine("Got Images");
+            _logger.LogInformation("Hallo hallo, we goit the list!");
             return Ok(results);
         }
 
