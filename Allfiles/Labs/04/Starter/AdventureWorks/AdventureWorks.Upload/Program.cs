@@ -47,46 +47,56 @@
                     .CreateAsync();
                 // </Initialize>
 
-                using (StreamReader reader = new StreamReader(File.OpenRead(JsonFilePath)))
-                {
-                    string json = await reader.ReadToEndAsync();
-                    models = JsonSerializer.Deserialize<List<Model>>(json);
-                    amountToInsert = models.Count;
-                }
+                //using (StreamReader reader = new StreamReader(File.OpenRead(JsonFilePath)))
+                //{
+                //    string json = await reader.ReadToEndAsync();
+                //    models = JsonSerializer.Deserialize<List<Model>>(json);
+                //    amountToInsert = models.Count;
+                //}
+                var json = await File.ReadAllTextAsync(JsonFilePath);
+                models = JsonSerializer.Deserialize<List<Model>>(json);
+                amountToInsert = models.Count;
 
                 // Prepare items for insertion
-                Console.WriteLine($"Preparing {amountToInsert} items to insert...");
+                Console.WriteLine($"Preparing {amountToInsert} models to insert...");
 
                 // Create the list of Tasks
-                Console.WriteLine($"Starting...");
+                Console.WriteLine("Starting...");
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 // <ConcurrentTasks>
                 Container container = database.GetContainer(ContainerName);
 
-                List<Task> tasks = new List<Task>(amountToInsert);
-                foreach (Model model in models)
-                {
-                    tasks.Add(container.CreateItemAsync(model, new PartitionKey(model.Category))
-                        .ContinueWith(itemResponse =>
+                await Parallel.ForEachAsync(models, async(model, ct) =>
+                    {
+                        try
                         {
-                            if (!itemResponse.IsCompletedSuccessfully)
+                            await container.CreateItemAsync(model, new PartitionKey(model.Category))
+                                .ConfigureAwait(false);
+                        }
+                        catch (AggregateException ex)
+                        {
+                            if (ex.InnerExceptions.FirstOrDefault(innerEx => innerEx is CosmosException) is
+                                CosmosException cosmosException)
                             {
-                                AggregateException innerExceptions = itemResponse.Exception.Flatten();
-                                if (innerExceptions.InnerExceptions.FirstOrDefault(innerEx => innerEx is CosmosException) is CosmosException cosmosException)
-                                {
-                                    Console.WriteLine($"Received {cosmosException.StatusCode} ({cosmosException.Message}).");
-                                }
-                                else
-                                {
-                                    Console.WriteLine($"Exception {innerExceptions.InnerExceptions.FirstOrDefault()}.");
-                                }
+                                Console.WriteLine(
+                                    $"Received {cosmosException.StatusCode} ({cosmosException.Message}).");
                             }
-                        }));
-                }
-
-                // Wait until all are done
-                await Task.WhenAll(tasks);
-                // </ConcurrentTasks>
+                            else
+                            {
+                                Console.WriteLine($"Exception {ex.InnerExceptions.FirstOrDefault()}.");
+                            }
+                        }
+                        catch (CosmosException ex)
+                        {
+                            Console.WriteLine($"Received {ex.StatusCode} ({ex.Message}).");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Exception {ex}.");
+                        }
+                    }
+                ).ConfigureAwait(false);
+                
                 stopwatch.Stop();
 
                 Console.WriteLine($"Finished writing {amountToInsert} items in {stopwatch.Elapsed}.");
