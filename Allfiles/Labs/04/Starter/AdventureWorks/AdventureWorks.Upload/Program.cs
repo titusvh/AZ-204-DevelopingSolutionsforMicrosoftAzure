@@ -66,7 +66,9 @@
                 // <ConcurrentTasks>
                 Container container = database.GetContainer(ContainerName);
 
-                await Parallel.ForEachAsync(models, async(model, ct) =>
+                await Parallel.ForEachAsync(models, 
+                    new ParallelOptions(){MaxDegreeOfParallelism = amountToInsert},
+                    async(model, _) =>
                     {
                         try
                         {
