@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "SXqIQqA38JkQ2JzAcScnZ0xOCNxVhyJWAOBF5G09RlnoyMvQIjze6qFXLBNovnR1ebXpbYWFiGMUXJ7B4NZmqw==",
+  "success": true,
+  "projectFilePath": "S:\\Github-Titusvh\\AZ204-Courseware\\Homebrew\\MSAL\\MSAL-Demo-TH\\MSAL-Demo-TH.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\titus\\.nuget\\packages\\microsoft.identity.client\\4.55.0\\microsoft.identity.client.4.55.0.nupkg.sha512",
+    "C:\\Users\\titus\\.nuget\\packages\\microsoft.identitymodel.abstractions\\6.22.0\\microsoft.identitymodel.abstractions.6.22.0.nupkg.sha512"
+  ],
+  "logs": []
+}
