@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SvcBus", "SvcBus.csproj", "{AB48C416-8D14-41D0-90F5-97E2C8D88B49}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB48C416-8D14-41D0-90F5-97E2C8D88B49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB48C416-8D14-41D0-90F5-97E2C8D88B49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB48C416-8D14-41D0-90F5-97E2C8D88B49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB48C416-8D14-41D0-90F5-97E2C8D88B49}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DD018D62-85DA-4E75-808B-B7A0937E5BB2}
+	EndGlobalSection
+EndGlobal
